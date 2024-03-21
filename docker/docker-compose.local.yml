@@ -1,0 +1,81 @@
+version: '3.8'
+services:
+    backend:
+        build:
+            context: ./backend/
+            target: base
+            args:
+                USER_ID: ${USER_ID}
+        volumes:
+            - ../backend:/app/
+            - composer_cache:/home/dev/.composer
+        env_file: backend/.env
+        depends_on:
+            mysql:
+                condition: service_healthy
+    backend-cli:
+        build:
+            context: ./backend/
+            target: base
+            args:
+                USER_ID: ${USER_ID}
+        volumes:
+            - ../backend:/app/
+            - composer_cache:/home/dev/.composer
+        env_file: backend/.env
+        entrypoint: [ "" ]
+        command: [ "php", "-v" ]
+
+    messenger:
+        build:
+            context: ./backend/
+            target: messenger
+            args:
+                USER_ID: ${USER_ID}
+        volumes:
+            - ../backend:/app/
+        env_file: backend/.env
+        depends_on:
+            mysql:
+                condition: service_healthy
+    cron:
+        build:
+            context: ./backend/
+            target: cron
+            args:
+                USER_ID: ${USER_ID}
+        volumes:
+            - ../backend:/app/
+        env_file: backend/.env
+        init: true
+    nginx:
+        build:
+            context: ./nginx/
+        ports:
+            - ${NGINX_PORT}:80
+        depends_on: [ backend ]
+    mysql:
+        build:
+            context: ./mysql/
+        volumes:
+            - mysql:/var/lib/mysql/
+        ports:
+            - ${MYSQL_PORT}:3306
+        env_file: ./mysql/.env
+        healthcheck:
+            test: "mysql --user=$$MYSQL_USER --password=$$MYSQL_PASSWORD --execute='select 1;'"
+            interval: 1s
+            timeout: 100s
+            retries: 50
+    mailhog:
+        image: mailhog/mailhog:v1.0.1
+    docs:
+        image: swaggerapi/swagger-ui:v5.11.8
+        environment:
+            SWAGGER_JSON_URL: /docs/openapi.yaml
+            BASE_URL: /docs
+        volumes:
+            - ../backend/src-dev/openapi.yaml:/usr/share/nginx/html/openapi.yaml:ro
+volumes:
+    mysql:
+    composer_cache:

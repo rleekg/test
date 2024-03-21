@@ -1,0 +1,20 @@
+parameters:
+    paths:
+        - ../src
+    exclude_files:
+        - '#.*test.*#i'
+    layers:
+        -   name: Vendor
+            collectors:
+                -   type: className
+                    regex: (Symfony|Sensio|Doctrine|Webmozart|Psr|League|Nyholm|Valinor|ValinorBundle)\\.*
+        -   name: Infrastructure
+            collectors:
+                -   type: className
+                    regex: App\\Infrastructure\\.*
+    ruleset:
+        Infrastructure:
+            - Vendor
+        Vendor: ~
+
+

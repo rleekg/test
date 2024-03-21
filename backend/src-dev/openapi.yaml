@@ -1,0 +1,67 @@
+openapi: 3.0.3
+info:
+    title: symfony
+    version: 1.0.0
+    description: Заготовка для проектов на symfony, примеры модулей
+tags:
+    - name: general
+      description: Общее
+servers:
+    - url: /api
+paths:
+
+components:
+    schemas:
+        successResponse:
+            type: object
+            required:
+                - data
+            additionalProperties: false
+            properties:
+                status:
+                    type: string
+                    example: success
+                data:
+                    type: object
+        errorResponse:
+            type: object
+            properties:
+                data:
+                    type: object
+                    required:
+                        - error
+                        - code
+                        - message
+                        - errors
+                    additionalProperties: false
+                    properties:
+                        error:
+                            type: boolean
+                            example: true
+                        code:
+                            type: integer
+                        message:
+                            type: string
+                        errors:
+                            type: array
+                status:
+                    type: string
+    parameters:
+        limit:
+            in: query
+            name: limit
+            required: false
+            description: Лимит
+            example: 10
+            schema:
+                type: integer
+        offset:
+            in: query
+            name: offset
+            required: false
+            description: Смещение
+            example: 1
+            schema:
+                type: integer
+security:
+

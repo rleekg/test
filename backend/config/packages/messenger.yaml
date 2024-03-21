@@ -1,0 +1,63 @@
+when@dev:
+    framework:
+        messenger:
+            # Uncomment this (and the failed transport below) to send failed messages to this transport for later handling.
+            failure_transport: failed
+            transports:
+                # https://symfony.com/doc/current/messenger.html#transport-configuration
+                async:
+                    dsn: "%env(MESSENGER_TRANSPORT_DSN)%"
+                    retry_strategy:
+                        delay: 60000 # 60s * 1000ms
+                failed: 'doctrine://default?queue_name=failed'
+            buses:
+                command_bus:
+                    middleware:
+                    # each time a message is handled, the Doctrine connection
+                    # is "pinged" and reconnected if it's closed. Useful
+                    # if your workers run for a long time and the database
+                    # connection is sometimes lost
+                    - doctrine_ping_connection
+
+                    # After handling, the Doctrine connection is closed,
+                    # which can free up database connections in a worker,
+                    # instead of keeping them open forever
+                    - doctrine_close_connection
+
+                    # https://symfony.com/doc/5.3/messenger.html#other-middlewares
+                    - router_context
+
+when@test:
+    framework:
+        messenger:
+            transports:
+                sync: 'sync://'
+
+when@prod:
+    framework:
+        messenger:
+            # Uncomment this (and the failed transport below) to send failed messages to this transport for later handling.
+            failure_transport: failed
+            transports:
+                # https://symfony.com/doc/current/messenger.html#transport-configuration
+                async:
+                    dsn: 'doctrine://default'
+                    retry_strategy:
+                        delay: 60000 # 60s * 1000ms
+                failed: 'doctrine://default?queue_name=failed'
+            buses:
+                command_bus:
+                    middleware:
+                    # each time a message is handled, the Doctrine connection
+                    # is "pinged" and reconnected if it's closed. Useful
+                    # if your workers run for a long time and the database
+                    # connection is sometimes lost
+                    - doctrine_ping_connection
+
+                    # After handling, the Doctrine connection is closed,
+                    # which can free up database connections in a worker,
+                    # instead of keeping them open forever
+                    - doctrine_close_connection
+
+                    # https://symfony.com/doc/5.3/messenger.html#other-middlewares
+                    - router_context
