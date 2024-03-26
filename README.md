@@ -23,7 +23,31 @@ make init
 
 Документация OpenAPI доступна по адресу http://localhost:8088/docs
 
-Тестирование писем http://localhost:8088/mailhog
+/calculate-price
+```
+curl -X 'POST' \
+  'http://localhost:8088/api/calculate-price' \
+  -H 'accept: application/json' \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "product": "018e7808-14b9-7c07-8a74-e02f1f0f110d",
+  "taxNumber": "DE123456789",
+  "couponCode": "D15"
+}'
+```
+
+/purchase
+```
+curl -X 'POST' \
+  'http://localhost:8088/api/calculate-price' \
+  -H 'accept: application/json' \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "product": "018e7808-14b9-7c07-8a74-e02f1f0f110d",
+  "taxNumber": "DE123456789",
+  "couponCode": "D15"
+}'
+```
 
 ## Запуск проверок исходного кода
 
@@ -39,24 +63,3 @@ make check
 ```shell
 make help
 ```
-
-## Генерация кода
-
-[Maker](./backend/src-dev/Maker/README.md)
-
-## Инструкция по очистке, для старта проектов
-
-Для старта проекта необходимо удалить ненужные:
-- Модули, т.е. все директории в `backend/src`, кроме `Infrastructure`
-- Тесты из директорий:
-  - `backend/tests/Command`
-  - `backend/tests/Functional`, кроме `backend/tests/Functional/SDK/ApiWebTestCase.php`
-  - `backend/tests/Unit`
-- Все миграции из директории `backend/migrations` и сгенерировать новые.
-- Переменные окружения из файла `docker/backend/.env.dist`
-- Задания `cron` из файла `docker/backend/cron/crontab`
-- Разделы документации из файла `backend/src-dev/openapi.yaml`
-- Слои и правила `deptrac` из файла `backend/src-dev/deptrac.yaml`
-
-### Copyright and license
-

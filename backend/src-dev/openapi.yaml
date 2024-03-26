@@ -26,6 +26,7 @@ paths:
                                 product:
                                     type: string
                                     format: uuid
+                                    example: 018e7808-14b9-7c07-8a74-e02f1f0f110d
                                 taxNumber:
                                     type: string
                                     example: DE123456789
@@ -86,6 +87,7 @@ paths:
                                 product:
                                     type: string
                                     format: uuid
+                                    example: 018e7808-14b9-7c07-8a74-e02f1f0f110d
                                 taxNumber:
                                     type: string
                                     example: DE123456789
