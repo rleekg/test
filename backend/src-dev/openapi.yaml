@@ -40,7 +40,7 @@ paths:
                                 - couponCode
             responses:
                 '200':
-                    description: Пользователь успешно зарегистрирован
+                    description: Цена
                     content:
                         application/json:
                             schema:
@@ -69,6 +69,61 @@ paths:
                                     message: Неверный формат запроса
                                     errors: [ 'invalid_request' ]
                                 status: error
+    /purchase:
+        post:
+            operationId: purchase
+            summary: Покупка
+            description: Покупка
+            tags:
+                - product
+            requestBody:
+                description: Запрос
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            properties:
+                                product:
+                                    type: string
+                                    format: uuid
+                                taxNumber:
+                                    type: string
+                                    example: DE123456789
+                                couponCode:
+                                    type: string
+                                    enum: [D15, D20]
+                                    example: D15
+                                paymentProcessor:
+                                    type: string
+                                    example: paypal
+                            additionalProperties: false
+                            required:
+                                - product
+                                - taxNumber
+                                - paymentProcessor
+            responses:
+                '200':
+                    description: Успех
+                    content:
+                        application/json:
+                            schema:
+                                oneOf:
+                                    -   $ref: '#/components/schemas/successResponse'
+                                    -   $ref: '#/components/schemas/errorResponse'
+                '400':
+                    description: Ошибка запроса
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/errorResponse'
+                            example:
+                                data:
+                                    error: true
+                                    code: 400
+                                    message: Неверный формат запроса
+                                    errors: [ 'invalid_request' ]
+                                status: error
+
 components:
     schemas:
         successResponse:

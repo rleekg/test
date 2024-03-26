@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Product\Command;
+namespace App\Product\Command\Purchase;
 
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Constraints\NotBlank;
@@ -10,7 +10,7 @@ use Symfony\Component\Validator\Constraints\NotBlank;
 /**
  * Команда
  */
-final readonly class CalculatePriceCommand
+final readonly class PurchaseCommand
 {
     public function __construct(
         #[NotBlank]
@@ -20,5 +20,7 @@ final readonly class CalculatePriceCommand
         public string $taxNumber,
         #[Assert\Choice(['D15', 'D20', null])]
         public ?string $couponCode,
+        #[NotBlank]
+        public string $paymentProcessor,
     ) {}
 }

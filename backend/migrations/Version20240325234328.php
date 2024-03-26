@@ -29,9 +29,9 @@ final class Version20240325234328 extends AbstractMigration
         $this->addSql("INSERT INTO country VALUES (UUID_TO_BIN('".new UuidV7()."'), 'Франции', 'GR', 20)");
         $this->addSql("INSERT INTO country VALUES (UUID_TO_BIN('".new UuidV7()."'), 'Греции', 'FR', 24)");
 
-        $this->addSql("INSERT INTO product VALUES (UUID_TO_BIN('".new UuidV7()."'), 'Iphone', 100)");
-        $this->addSql("INSERT INTO product VALUES (UUID_TO_BIN('".new UuidV7()."'), 'Наушники', 20)");
-        $this->addSql("INSERT INTO product VALUES (UUID_TO_BIN('".new UuidV7()."'), 'Чехол', 10)");
+        $this->addSql("INSERT INTO product VALUES (UUID_TO_BIN('".new UuidV7()."'), 'Iphone', 100000)");
+        $this->addSql("INSERT INTO product VALUES (UUID_TO_BIN('".new UuidV7()."'), 'Наушники', 20000)");
+        $this->addSql("INSERT INTO product VALUES (UUID_TO_BIN('".new UuidV7()."'), 'Чехол', 10000)");
     }
 
     public function down(Schema $schema): void
