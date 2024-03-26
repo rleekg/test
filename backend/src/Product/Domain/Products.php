@@ -16,14 +16,14 @@ final readonly class Products
 {
     public function __construct(private EntityManagerInterface $entityManager) {}
 
-    public function add(Product $article): void
+    public function add(Product $product): void
     {
-        $this->entityManager->persist($article);
+        $this->entityManager->persist($product);
     }
 
-    public function remove(Product $article): void
+    public function remove(Product $product): void
     {
-        $this->entityManager->remove($article);
+        $this->entityManager->remove($product);
     }
 
     public function findById(Uuid $id): ?Product

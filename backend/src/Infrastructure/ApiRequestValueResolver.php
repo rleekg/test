@@ -6,6 +6,7 @@ namespace App\Infrastructure;
 
 use App\Infrastructure\ApiException\ApiBadRequestException;
 use App\Infrastructure\ApiException\BuildMappingErrorMessages;
+use App\Infrastructure\ApiException\Validation\ApiValidationException;
 use CuyZ\Valinor\Mapper\MappingError;
 use CuyZ\Valinor\Mapper\Source\Exception\InvalidSource;
 use CuyZ\Valinor\Mapper\Source\JsonSource;
@@ -16,6 +17,7 @@ use Override;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Controller\ValueResolverInterface;
 use Symfony\Component\HttpKernel\ControllerMetadata\ArgumentMetadata;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Throwable;
 use Webmozart\Assert\InvalidArgumentException;
 
@@ -27,12 +29,16 @@ use Webmozart\Assert\InvalidArgumentException;
 #[AsService]
 final readonly class ApiRequestValueResolver implements ValueResolverInterface
 {
-    public function __construct(private BuildMappingErrorMessages $buildMappingErrorMessages) {}
+    public function __construct(
+        private BuildMappingErrorMessages $buildMappingErrorMessages,
+        private ValidatorInterface $validator,
+    ) {}
 
     /**
      * @return iterable<TApiRequest>
      *
      * @throws ApiBadRequestException
+     * @throws ApiValidationException
      */
     #[Override]
     public function resolve(Request $request, ArgumentMetadata $argument): iterable
@@ -65,6 +71,34 @@ final readonly class ApiRequestValueResolver implements ValueResolverInterface
             throw new ApiBadRequestException(['Невалидный json'], $e);
         }
 
-        return [$requestObject];
+        $errors = $this->validator->validate($requestObject);
+        if ($errors->count() === 0) {
+            return [$requestObject];
+        }
+
+        /** @var array<non-empty-string, ApiException\Validation\ErrorMessage> $errors */
+        $errors = [];
+        foreach ($this->validator->validate($requestObject) as $error) {
+            /** @var non-empty-string $property */
+            $property = $error->getPropertyPath();
+
+            /** @var non-empty-string $value */
+            $value = $error->getInvalidValue();
+
+            /** @var non-empty-string $message */
+            $message = $error->getMessage();
+
+            /** @var non-empty-string $code */
+            $code = $error->getCode();
+
+            $errors[$property] = new ApiException\Validation\ErrorMessage(
+                property: $property,
+                value: $value,
+                message: $message,
+                code: $code,
+            );
+        }
+
+        throw new ApiValidationException($errors);
     }
 }

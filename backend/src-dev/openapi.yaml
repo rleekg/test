@@ -9,7 +9,66 @@ tags:
 servers:
     - url: /api
 paths:
-
+    /calculate-price:
+        post:
+            operationId: calculate-price
+            summary: Расчет цены
+            description: Расчет цены
+            tags:
+                - product
+            requestBody:
+                description: Запрос
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            properties:
+                                product:
+                                    type: string
+                                    format: uuid
+                                taxNumber:
+                                    type: string
+                                    example: DE123456789
+                                couponCode:
+                                    type: string
+                                    enum: [D15, D20]
+                                    example: D15
+                            additionalProperties: false
+                            required:
+                                - product
+                                - taxNumber
+                                - couponCode
+            responses:
+                '200':
+                    description: Пользователь успешно зарегистрирован
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    data:
+                                        type: array
+                                        items:
+                                            type: object
+                                            properties:
+                                                price:
+                                                    type: integer
+                                    status:
+                                        type: string
+                                        enum: [success, error]
+                '400':
+                    description: Ошибка запроса
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/errorResponse'
+                            example:
+                                data:
+                                    error: true
+                                    code: 400
+                                    message: Неверный формат запроса
+                                    errors: [ 'invalid_request' ]
+                                status: error
 components:
     schemas:
         successResponse:
